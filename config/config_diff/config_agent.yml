@@ -1,4 +1,4 @@
 agent_config:
-    tools_path: 'agent/agent_tools.py'
+    tools_path: 'agent/agent_hotpotqa/agent_tools.py'
 meta_prompts:
     folder: 'prompts/meta_prompts_agent'

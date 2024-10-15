@@ -10,10 +10,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--config_path', default='config/config_diff/config_agent.yml', type=str, help='Configuration file path')
 
 parser.add_argument('--task_description',
-                    default="",
+                    default="Answer the user query using the provided tools.",
                     required=False, type=str, help='Describing the agent task')
 parser.add_argument('--initial_system_prompt',
-                    default="",
+                    default="""
+                            You will be given questions that will have specific answers of a few words. The input will be question in the following format:
+                            Input: str
+                            You should provide the answer to this question using the tools available to you.
+                            """,
                     required=False, type=str, help='Initial system prompt, can be either text or a path to a file')
 parser.add_argument('--load_dump', default='dump', required=False, type=str, help='In case of loading from checkpoint')
 parser.add_argument('--output_dump', default='dump', required=False, type=str, help='Output to save checkpoints')
