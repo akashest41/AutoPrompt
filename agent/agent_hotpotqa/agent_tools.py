@@ -4,15 +4,15 @@ from bs4 import BeautifulSoup
 
 # Tools for HotpotQA benchmarking created using @tool decorators
 @tool
-def wiki_search(entity: str) -> list: 
+def wiki_search(entity: str) -> list:
     """
-    Returns the first paragraph in the Wikipedia page of entity, if it exists, or else it returns the Top-5 similar entities from Wikipedia
+    Returns the Wikipedia entry of the entity that is requested, if it exists, or else it returns a list of the Top-5 similar entities from Wikipedia
 
     Parameters:
         entity (str): The string whose Wikipedia page needs to be searched
 
     Returns:
-        list: A collection with a single string if its the first paragraph when entity is found, otherwise five strings of the best entries that could be searched next. Note that the first element of the list will always be a string giving information about the search status.
+        list: List of searchable entities that which have existing Wikipedia pages. Note that the first element of the list will always be a string giving information about the search status.
     """
     entity_ = entity.replace(" ", "+")
     search_url = f"https://en.wikipedia.org/w/index.php?search={entity_}"
@@ -28,13 +28,28 @@ def wiki_search(entity: str) -> list:
             result_titles.append(div_text)
         return result_titles[:6]
     else:
-        page = [p.get_text().strip() for p in soup.find_all("p")]
-        if any("may refer to:" in p for p in page):
-            wiki_search("[" + entity + "]") #check this
-        else:
-            for p in page:
-                if p:
-                    return ["Found exact match. Here is the first paragraph from its Wikipedia page.", p]
+        return ["Found exact match.", entity] 
+
+@tool
+def wiki_text(entity: str) -> list: 
+    """
+    Returns the full text in the Wikipedia page of entity
+
+    Parameters:
+        entity (str): The string whose Wikipedia page needs to be searched
+
+    Returns:
+        list: A collection of all paragraphs in the Wikipedia page.
+    """
+    entity_ = entity.replace(" ", "+")
+    search_url = f"https://en.wikipedia.org/w/index.php?search={entity_}"
+    response_text = requests.get(search_url).text
+    soup = BeautifulSoup(response_text, features="html.parser")
+    page = [p.get_text().strip() for p in soup.find_all("p")]
+    if any("may refer to:" in p for p in page):
+        wiki_search("[" + entity + "]") #check this
+    else:
+        return page
 
 @tool
 def find_on_page(keyword: str, page: str) -> list:
